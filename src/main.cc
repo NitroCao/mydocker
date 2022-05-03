@@ -1,12 +1,8 @@
-#include <iostream>
-#include <CLI/App.hpp>
-#include <CLI/Formatter.hpp>
-#include <CLI/Config.hpp>
+#include "application.h"
 
 int main(int argc, char **argv)
 {
-    CLI::App app{"My own container runtime written in C++"};
+    mydocker::app::application app;
 
-    CLI11_PARSE(app, argc, argv);
-    return 0;
+    return app.run(argc, argv);
 }
