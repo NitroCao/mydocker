@@ -1,3 +1,10 @@
 IndentWidth: 4
 AccessModifierOffset: -4
 BreakBeforeBraces: Stroustrup
+ColumnLimit: 120
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^<.*'
+    Priority: -1
+  - Regex: '^".*'
+    Priority: 0
