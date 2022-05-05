@@ -52,6 +52,7 @@ void application::create_subcommand(subcomm const &subc)
         sub_comm->add_flag(flag.first, flag.second);
     for (auto &option : subc.options)
         sub_comm->add_option(option.first, option.second);
+    sub_comm->allow_extras();
 }
 
 int application::get_subcommand_idx(std::string const &subc) const
