@@ -18,6 +18,7 @@ private:
     enum subcommand {
         SUB_CREATE,
         SUB_RUN,
+        SUB_SPEC,
         SUB_NON_EXIST,
     };
     typedef std::pair<const char *, const char *> flag_desc;
@@ -50,7 +51,10 @@ private:
              std::vector<flag_desc>{flag_desc{"-b,--bundle", "path to the root of the bundle directory, "
                                                              "defaults to the current directory"}},
          }},
-    };
+        {SUB_SPEC,
+         subcomm{"spec", "create a new specification file",
+                 std::vector<flag_desc>{flag_desc{"--rootless", "generate a configuration for a rootless container"}},
+                 std::vector<flag_desc>{flag_desc{"-b,--bundle", "path to the root of the bundle directory"}}}}};
 
     CLI::App app;
 

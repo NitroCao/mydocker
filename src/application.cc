@@ -4,6 +4,7 @@
 
 #include "application.h"
 #include "config.h"
+#include "spec_cmd.h"
 
 namespace mydocker {
 namespace app {
@@ -36,6 +37,9 @@ int application::run(int argc, char **argv)
         std::cout << "run subcommand create and run a container\n";
         break;
     }
+    case SUB_SPEC:
+        return mydocker::spec::spec::run(subcomm);
+        break;
     case SUB_NON_EXIST:
     default:
         std::cerr << "unknown subcommand\n";
