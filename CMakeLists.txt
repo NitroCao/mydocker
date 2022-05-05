@@ -8,6 +8,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 find_package(CLI11 CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/src/config.h.in"
