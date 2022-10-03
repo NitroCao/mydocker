@@ -4,9 +4,9 @@
 #include <CLI/App.hpp>
 #include <cstring>
 #include <fstream>
+#include <spdlog/spdlog.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <spdlog/spdlog.h>
 
 #include "specs.h"
 
@@ -90,9 +90,9 @@ private:
                         std::vector<specs::POSIXRlimit>{
                             specs::POSIXRlimit{.type = "RLIMIT_NOFILE", .hard = 1024, .soft = 1024},
                         },
-                    .no_new_privileges = true,
+                    .noNewPrivileges = true,
                 },
-            .root = specs::Root{.path = "rootfs", .read_only = true},
+            .root = specs::Root{.path = "rootfs", .readonly = true},
             .hostname = "runc",
             .mounts =
                 std::vector<specs::Mount>{
@@ -141,12 +141,12 @@ private:
                                                            specs::LinuxNamespace{.type = specs::ipc_namespace},
                                                            specs::LinuxNamespace{.type = specs::uts_namespace},
                                                            specs::LinuxNamespace{.type = specs::mount_namespace}},
-                    .masked_paths =
+                    .maskedPaths =
                         std::vector<std::string>{"/proc/acpi", "/proc/asound", "/proc/kcore", "/proc/keys",
                                                  "/proc/latency_stats", "/proc/timer_list", "/proc/timer_stats",
                                                  "/proc/sched_debug", "/sys/firmware", "/proc/scsi"},
-                    .read_only_paths = std::vector<std::string>{"/proc/bus", "/proc/fs", "/proc/irq", "/proc/sys",
-                                                                "/proc/sysrq-trigger"},
+                    .readonlyPaths = std::vector<std::string>{"/proc/bus", "/proc/fs", "/proc/irq", "/proc/sys",
+                                                              "/proc/sysrq-trigger"},
                 },
         };
     }

@@ -35,10 +35,10 @@ typedef struct User {
     unsigned int uid;
     unsigned int gid;
     unsigned int umask;
-    std::vector<unsigned int> additional_gids;
+    std::vector<unsigned int> additionalGids;
     std::string username;
 } User;
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(User, uid, gid, umask, additional_gids, username);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(User, uid, gid, umask, additionalGids, username);
 
 typedef struct LinuxCapabilities {
     std::vector<std::string> bounding;
@@ -58,26 +58,26 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(POSIXRlimit, type, hard, soft);
 
 typedef struct Process {
     bool terminal;
-    Box box;
+    Box consoleSize;
     User user;
     std::vector<std::string> args;
     std::vector<std::string> env;
     std::string cwd;
     LinuxCapabilities capabilities;
     std::vector<POSIXRlimit> rlimits;
-    bool no_new_privileges;
-    std::string apparmor_profile;
-    int oom_score_adj;
-    std::string selinux_label;
+    bool noNewPrivileges;
+    std::string apparmorProfile;
+    int oomScoreAdj;
+    std::string selinuxLabel;
 } Process;
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Process, terminal, box, user, args, env, cwd, capabilities, rlimits,
-                                   no_new_privileges, apparmor_profile, oom_score_adj, selinux_label);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Process, terminal, consoleSize, user, args, env, cwd, capabilities, rlimits,
+                                   noNewPrivileges, apparmorProfile, oomScoreAdj, selinuxLabel);
 
 typedef struct Root {
     std::string path;
-    bool read_only;
+    bool readonly;
 } Root;
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Root, path, read_only);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Root, path, readonly);
 
 typedef struct Mount {
     std::string destination;
@@ -97,21 +97,21 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Hook, path, args, env);
 
 typedef struct Hooks {
     std::vector<Hook> prestart;
-    std::vector<Hook> create_runtime;
-    std::vector<Hook> create_container;
-    std::vector<Hook> start_container;
+    std::vector<Hook> createRuntime;
+    std::vector<Hook> createContainer;
+    std::vector<Hook> startContainer;
     std::vector<Hook> poststart;
     std::vector<Hook> poststop;
 } Hooks;
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Hooks, prestart, create_runtime, create_container, start_container, poststart,
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Hooks, prestart, createRuntime, createContainer, startContainer, poststart,
                                    poststop);
 
 typedef struct LinuxIDMapping {
-    unsigned int container_id;
-    unsigned int host_id;
+    unsigned int containerID;
+    unsigned int hostID;
     unsigned int size;
 } LinuxIDMapping;
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxIDMapping, container_id, host_id, size);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxIDMapping, containerID, hostID, size);
 
 typedef struct LinuxDeviceCgroup {
     bool allow;
@@ -127,24 +127,24 @@ typedef struct LinuxMemory {
     long reservation;
     long swap;
     long kernel;
-    long kernel_tcp;
+    long kernelTCP;
     long swappiness;
-    bool disable_oom_killer;
-    bool use_hierarchy;
+    bool disableOOMKiller;
+    bool useHierarchy;
 } LinuxMemory;
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxMemory, limit, reservation, swap, kernel, kernel_tcp, swappiness,
-                                   disable_oom_killer, use_hierarchy);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxMemory, limit, reservation, swap, kernel, kernelTCP, swappiness,
+                                   disableOOMKiller, useHierarchy);
 
 typedef struct LinuxCPU {
     unsigned long shares;
     unsigned long period;
-    unsigned long realtime_period;
+    unsigned long realtimePeriod;
     long quota;
-    long realtime_runtime;
+    long realtimeRuntime;
     std::string cpus;
     std::string mems;
 } LinuxCPU;
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxCPU, shares, period, realtime_period, quota, realtime_runtime, cpus, mems);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxCPU, shares, period, realtimePeriod, quota, realtimeRuntime, cpus, mems);
 
 typedef struct LinuxPids {
     long limit;
@@ -153,11 +153,11 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxPids, limit);
 
 typedef struct LinuxWeightDevice {
     unsigned short weight;
-    unsigned short leaf_weight;
+    unsigned short leafWeight;
     long major;
     long minor;
 } LinuxWeightDevice;
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxWeightDevice, weight, leaf_weight, major, minor);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxWeightDevice, weight, leafWeight, major, minor);
 
 typedef struct LinuxThrottleDevice {
     unsigned long rate;
@@ -168,21 +168,21 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxThrottleDevice, rate, major, minor);
 
 typedef struct LinuxBLockIO {
     unsigned short weight;
-    unsigned short leaf_weight;
-    std::vector<LinuxWeightDevice> weight_device;
-    std::vector<LinuxThrottleDevice> throttle_read_bps_device;
-    std::vector<LinuxThrottleDevice> throttle_write_bps_device;
-    std::vector<LinuxThrottleDevice> throttle_read_iops_device;
-    std::vector<LinuxThrottleDevice> throttle_write_iops_device;
+    unsigned short leafWeight;
+    std::vector<LinuxWeightDevice> weightDevice;
+    std::vector<LinuxThrottleDevice> throttleReadBpsDevice;
+    std::vector<LinuxThrottleDevice> throttleWriteBpsDevice;
+    std::vector<LinuxThrottleDevice> throttleReadIopsDevice;
+    std::vector<LinuxThrottleDevice> throttleWriteIopsDevice;
 } LinuxBLockIO;
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxBLockIO, weight, leaf_weight, weight_device, throttle_read_bps_device,
-                                   throttle_write_bps_device, throttle_read_iops_device, throttle_write_iops_device);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxBLockIO, weight, leafWeight, weightDevice, throttleReadBpsDevice,
+                                   throttleWriteBpsDevice, throttleReadIopsDevice, throttleWriteIopsDevice);
 
-typedef struct LinuxHugePageLimit {
+typedef struct LinuxHugepageLimit {
     unsigned long limit;
-    std::string page_size;
+    std::string pageSize;
 } LinuxHugePageLimit;
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxHugePageLimit, limit, page_size);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxHugepageLimit, limit, pageSize);
 
 typedef struct LinuxInterfacePriority {
     unsigned int priority;
@@ -191,30 +191,30 @@ typedef struct LinuxInterfacePriority {
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxInterfacePriority, priority, name);
 
 typedef struct LinuxNetwork {
-    unsigned int class_id;
+    unsigned int classID;
     std::vector<LinuxInterfacePriority> priorities;
 } LinuxNetwork;
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxNetwork, class_id, priorities);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxNetwork, classID, priorities);
 
 typedef struct LinuxRdma {
-    unsigned int hca_handles;
-    unsigned int hca_objects;
+    unsigned int hcaHandles;
+    unsigned int hcaObjects;
 } LinuxRdma;
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxRdma, hca_handles, hca_objects);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxRdma, hcaHandles, hcaObjects);
 
 typedef struct LinuxResources {
     std::vector<LinuxDeviceCgroup> devices;
     LinuxMemory memory;
     LinuxCPU cpu;
     LinuxPids pids;
-    LinuxBLockIO block_io;
-    std::vector<LinuxHugePageLimit> huge_page_limits;
+    LinuxBLockIO blockIO;
+    std::vector<LinuxHugepageLimit> hugepageLimits;
     LinuxNetwork network;
     std::map<std::string, LinuxRdma> rdma;
     std::map<std::string, std::string> unified;
 } LinuxResources;
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxResources, devices, memory, cpu, pids, block_io, huge_page_limits, network,
-                                   rdma, unified);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxResources, devices, memory, cpu, pids, blockIO, hugepageLimits, network, rdma,
+                                   unified);
 
 typedef std::string LinuxNamespaceType;
 const LinuxNamespaceType pid_namespace("pid");
@@ -234,13 +234,13 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxNamespace, type, path);
 typedef struct LinuxDevie {
     unsigned int uid;
     unsigned int gid;
-    unsigned int file_mode;
+    unsigned int fileMode;
     long major;
     long minor;
     std::string path;
     std::string type;
 } LinuxDevice;
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxDevice, uid, gid, file_mode, major, minor, path, type);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxDevice, uid, gid, fileMode, major, minor, path, type);
 
 typedef std::string LinuxSeccompAction;
 const LinuxSeccompAction act_kill = "SCMP_ACT_KILL";
@@ -272,37 +272,37 @@ const LinuxSeccompOperator op_masked_equal("SCMP_CMP_MASKED_EQ");
 typedef struct LinuxSeccompArg {
     unsigned int index;
     unsigned long value;
-    unsigned long value_two;
+    unsigned long valueTwo;
     LinuxSeccompOperator op;
 } LinuxSeccompArg;
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxSeccompArg, index, value, value_two, op);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxSeccompArg, index, value, valueTwo, op);
 
 typedef struct LinuxSyscall {
     std::vector<std::string> names;
     LinuxSeccompAction action;
-    unsigned int errno_ret;
+    unsigned int errnoRet;
     std::vector<LinuxSeccompArg> args;
 } LinuxSyscall;
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxSyscall, names, action, errno_ret, args);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxSyscall, names, action, errnoRet, args);
 
 typedef struct LinuxSeccomp {
-    unsigned int default_errno_ret;
-    LinuxSeccompAction default_action;
+    unsigned int defaultErrnoRet;
+    LinuxSeccompAction defaultAction;
     std::vector<Arch> architectures;
     std::vector<LinuxSeccompFlag> flags;
-    std::string listener_path;
-    std::string listener_metadata;
+    std::string listenerPath;
+    std::string listenerMetadata;
     std::vector<LinuxSyscall> syscalls;
 } LinuxSeccomp;
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxSeccomp, default_errno_ret, default_action, architectures, flags, listener_path,
-                                   listener_metadata, syscalls);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxSeccomp, defaultErrnoRet, defaultAction, architectures, flags, listenerPath,
+                                   listenerMetadata, syscalls);
 
 typedef struct LinuxIntelRdt {
-    std::string clos_id;
-    std::string l3_cache_schema;
-    std::string mem_bw_schema;
+    std::string closID;
+    std::string l3CacheSchema;
+    std::string memBwSchema;
 } LinuxIntelRdt;
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxIntelRdt, clos_id, l3_cache_schema, mem_bw_schema);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxIntelRdt, closID, l3CacheSchema, memBwSchema);
 
 typedef std::string LinuxPersonalityDomain;
 const LinuxPersonalityDomain per_linux("LINUX");
@@ -317,24 +317,24 @@ typedef struct LinuxPersonality {
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinuxPersonality, domain, flags);
 
 typedef struct Linux {
-    std::vector<LinuxIDMapping> uid_mappings;
-    std::vector<LinuxIDMapping> gid_mappings;
+    std::vector<LinuxIDMapping> uidMappings;
+    std::vector<LinuxIDMapping> gidMappings;
     std::map<std::string, std::string> sysctl;
     LinuxResources resources;
-    std::string cgroups_path;
+    std::string cgroupsPath;
     std::vector<LinuxNamespace> namespaces;
     std::vector<LinuxDevice> devices;
     LinuxSeccomp seccomp;
-    std::string rootfs_propagation;
-    std::vector<std::string> masked_paths;
-    std::vector<std::string> read_only_paths;
-    std::string mount_label;
-    LinuxIntelRdt intel_rdt;
+    std::string rootfsPropagation;
+    std::vector<std::string> maskedPaths;
+    std::vector<std::string> readonlyPaths;
+    std::string mountLabel;
+    LinuxIntelRdt intelRdt;
     LinuxPersonality personality;
 } Linux;
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Linux, uid_mappings, gid_mappings, sysctl, resources, cgroups_path, namespaces,
-                                   devices, seccomp, rootfs_propagation, masked_paths, read_only_paths, mount_label,
-                                   intel_rdt, personality);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Linux, uidMappings, gidMappings, sysctl, resources, cgroupsPath, namespaces, devices,
+                                   seccomp, rootfsPropagation, maskedPaths, readonlyPaths, mountLabel, intelRdt,
+                                   personality);
 
 typedef struct Spec {
     std::string version;
@@ -348,9 +348,17 @@ typedef struct Spec {
 } Spec;
 inline void to_json(json &j, const Spec &s)
 {
-    j = json{{"ociVersion", s.version},      {"process", s.process}, {"root", s.root},
-             {"hostname", s.hostname},       {"mounts", s.mounts},   {"hooks", s.hooks},
-             {"annotations", s.annotations}, {"linux", s._linux}};
+    j = json{{"ociVersion", s.version},
+             {"process", s.process},
+             {"root", s.root},
+             {"hostname", s.hostname},
+             {"linux", s._linux}};
+    if (!s.mounts.empty())
+        j["mounts"] = s.mounts;
+    if (!s.hooks.empty())
+        j["hooks"] = s.hooks;
+    if (!s.annotations.empty())
+        j["annotations"] = s.annotations;
 }
 inline void from_json(const json &j, Spec &s)
 {
