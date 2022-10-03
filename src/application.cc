@@ -1,6 +1,7 @@
 #include <cassert>
 #include <map>
 #include <vector>
+#include <spdlog/spdlog.h>
 
 #include "application.h"
 #include "config.h"
@@ -25,6 +26,10 @@ int application::run(int argc, char **argv)
 {
     CLI11_PARSE(app, argc, argv);
 
+    int ret = init_env();
+    if (ret != 0)
+        return ret;
+
     auto subcoms = app.get_subcommands();
     assert(subcoms.size() == 1 && "the command line only requires one subcommand");
     auto subcomm = subcoms[0];
@@ -47,6 +52,23 @@ int application::run(int argc, char **argv)
     }
 
     return 0;
+}
+
+int application::init_env()
+{
+    int ret = 0;
+    auto debug_opt = app.get_option("--debug");
+    bool is_debug = debug_opt->as<bool>();
+    if (is_debug) {
+        spdlog::set_level(spdlog::level::debug);
+    } else {
+        spdlog::set_level(spdlog::level::info);
+    }
+
+    std::string json_pattern = {R"({"level": "%^%l%$", "time": "%Y-%m-%dT%H:%M:%S.%f%z", "process": %P, "thread": %t, "message": "%v"})"};
+    spdlog::set_pattern(json_pattern);
+
+    return ret;
 }
 
 void application::create_subcommand(subcomm const &subc)

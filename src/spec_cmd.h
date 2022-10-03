@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <spdlog/spdlog.h>
 
 #include "specs.h"
 
@@ -19,6 +20,7 @@ public:
     {
         std::string bundle_dir;
 
+        spdlog::debug("Creating sample config.json under current directory");
         auto bundle_option = app->get_option("--bundle");
         if (bundle_option != nullptr) {
             auto results = bundle_option->results();
@@ -36,16 +38,14 @@ public:
         // Change current working directory to the specified bundle dir.
         if (!bundle_dir.empty()) {
             if (chdir(bundle_dir.c_str()) != 0) {
-                std::cerr << "failed to chdir to bundle directory " << bundle_dir << ": " << strerror(errno)
-                          << std::endl;
+                spdlog::error("Failed to chdir to bundle directory {}: {}", bundle_dir, strerror(errno));
                 return errno;
             }
         }
 
         struct stat file_info;
         if (stat(specs::spec_config, &file_info) == 0) {
-            std::cerr << specs::spec_config << " file already exists in the bundle directory. Remove it first."
-                      << std::endl;
+            spdlog::error("{} file already exists in the bundle directory. Remove it first.", specs::spec_config);
             return 1;
         }
 
@@ -56,7 +56,7 @@ public:
             spec_file << default_spec.dump(2) << std::endl;
         }
         catch (std::ofstream::failure &e) {
-            std::cerr << "failed to create " << specs::spec_config << ": " << strerror(errno) << std::endl;
+            spdlog::error("Failed to create {}: {}", specs::spec_config, strerror(errno));
             return e.code().value();
         }
 
