@@ -1,7 +1,7 @@
 #include <cassert>
 #include <map>
-#include <vector>
 #include <spdlog/spdlog.h>
+#include <vector>
 
 #include "application.h"
 #include "config.h"
@@ -61,11 +61,13 @@ int application::init_env()
     bool is_debug = debug_opt->as<bool>();
     if (is_debug) {
         spdlog::set_level(spdlog::level::debug);
-    } else {
+    }
+    else {
         spdlog::set_level(spdlog::level::info);
     }
 
-    std::string json_pattern = {R"({"level": "%^%l%$", "time": "%Y-%m-%dT%H:%M:%S.%f%z", "process": %P, "thread": %t, "message": "%v"})"};
+    std::string json_pattern = {
+        R"({"level": "%^%l%$", "time": "%Y-%m-%dT%H:%M:%S.%f%z", "process": %P, "thread": %t, "message": "%v"})"};
     spdlog::set_pattern(json_pattern);
 
     return ret;
