@@ -58,6 +58,7 @@ private:
 
     CLI::App app;
 
+    int init_env();
     inline void create_subcommand(subcomm const &subc);
     inline int get_subcommand_idx(std::string const &subc) const;
 };
