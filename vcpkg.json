@@ -1,0 +1,9 @@
+{
+  "name": "mydocker",
+  "version-string": "0.1.0",
+  "license": "MIT",
+  "dependencies": [
+    "spdlog",
+    "cli11"
+  ]
+}

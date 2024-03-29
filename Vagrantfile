@@ -81,6 +81,7 @@ Vagrant.configure("2") do |config|
   # Enable provisioning with a shell script. Additional provisioners such as
   # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
   # documentation for more information about their specific syntax and use.
+  # config.vm.provision "shell", env: {"https_proxy" => "socks5://127.0.0.1:1080"}, inline: <<-SHELL
   config.vm.provision "shell", inline: <<-SHELL
     sed -e 's|^metalink=|#metalink=|g' \
          -e 's|^#baseurl=http://download.example/pub/fedora/linux|baseurl=https://mirrors.ustc.edu.cn/fedora|g' \
@@ -90,5 +91,8 @@ Vagrant.configure("2") do |config|
          /etc/yum.repos.d/fedora-updates.repo \
          /etc/yum.repos.d/fedora-updates-modular.repo
     dnf install -y man-pages man-db clang-devel
+    git clone https://github.com/microsoft/vcpkg /opt/vcpkg
+    /opt/vcpkg/bootstrap-vcpkg.sh
+    ln -sf /opt/vcpkg/vcpkg /usr/local/bin/vcpkg
   SHELL
 end
