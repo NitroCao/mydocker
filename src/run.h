@@ -4,10 +4,14 @@
 #include <string>
 
 class RunApp {
+  private:
+    static int run_child(void *);
+
   public:
     typedef struct {
         std::string command;
     } run_args;
+
     static std::function<void()> run_callback(const run_args &arg);
 };
 
