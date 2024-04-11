@@ -3,10 +3,11 @@
 
 #include <map>
 #include <memory>
-#include <nlohmann/json.hpp>
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include <nlohmann/json.hpp>
 
 namespace spec {
 
@@ -49,11 +50,16 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(User, uid, gid, umask,
                                                 additionalGids, username);
 
 typedef struct LinuxCapabilities {
-    std::vector<std::string> bounding;
-    std::vector<std::string> effective;
-    std::vector<std::string> inheritable;
-    std::vector<std::string> permitted;
-    std::vector<std::string> ambient;
+    std::vector<std::string> bounding = {"CAP_AUDIT_WRITE", "CAP_KILL",
+                                         "CAP_NET_BIND_SERVICE"};
+    std::vector<std::string> effective = {"CAP_AUDIT_WRITE", "CAP_KILL",
+                                          "CAP_NET_BIND_SERVICE"};
+    std::vector<std::string> inheritable = {"CAP_AUDIT_WRITE", "CAP_KILL",
+                                            "CAP_NET_BIND_SERVICE"};
+    std::vector<std::string> permitted = {"CAP_AUDIT_WRITE", "CAP_KILL",
+                                          "CAP_NET_BIND_SERVICE"};
+    std::vector<std::string> ambient = {"CAP_AUDIT_WRITE", "CAP_KILL",
+                                        "CAP_NET_BIND_SERVICE"};
 
     friend bool operator==(const LinuxCapabilities &a,
                            const LinuxCapabilities &b) {
@@ -80,18 +86,21 @@ typedef struct POSIXRlimit {
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(POSIXRlimit, type, hard, soft);
 
 typedef struct Process {
-    bool                     terminal;
+    bool                     terminal = true;
     Box                      consoleSize;
     User                     user;
-    std::vector<std::string> args;
-    std::vector<std::string> env;
-    std::string              cwd;
+    std::vector<std::string> args = {"sh"};
+    std::vector<std::string> env = {
+        "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "TERM=xterm"};
+    std::string              cwd = "/";
     LinuxCapabilities        capabilities;
-    std::vector<POSIXRlimit> rlimits;
-    bool                     noNewPrivileges;
-    std::string              apparmorProfile;
-    int                      oomScoreAdj;
-    std::string              selinuxLabel;
+    std::vector<POSIXRlimit> rlimits = {
+        {.type = "RLIMIT_NOFILE", .hard = 1024, .soft = 1024}};
+    bool        noNewPrivileges = true;
+    std::string apparmorProfile;
+    int         oomScoreAdj;
+    std::string selinuxLabel;
 
     friend bool operator==(const Process &a, const Process &b) {
         return std::tie(a.terminal, a.consoleSize, a.user, a.args, a.env, a.cwd,
@@ -107,8 +116,8 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(
     noNewPrivileges, apparmorProfile, oomScoreAdj, selinuxLabel);
 
 typedef struct Root {
-    std::string path;
-    bool        readonly = false;
+    std::string path = "rootfs";
+    bool        readonly = true;
 
     friend bool operator==(const Root &a, const Root &b) {
         return std::tie(a.path, a.readonly) == std::tie(b.path, b.readonly);
@@ -545,14 +554,70 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(Linux, uidMappings, gidMappings,
                                                 intelRdt, personality);
 
 typedef struct Spec {
-    std::string                        version;
-    Process                            process;
-    Root                               root;
-    std::string                        hostname;
-    std::vector<Mount>                 mounts;
+    std::string        version;
+    Process            process;
+    Root               root;
+    std::string        hostname = "runc";
+    std::vector<Mount> mounts = {
+        {.destination = "/proc", .type = "proc", .source = "proc"},
+        {.destination = "/dev",
+         .type = "tmpfs",
+         .source = "tmpfs",
+         .options = {"nosuid", "strictatime", "mode=755", "size=65536k"}},
+        {.destination = "/dev/pts",
+         .type = "devpts",
+         .source = "devpts",
+         .options = {"nosuid", "noexec", "newinstance", "ptmxmode=0666",
+                     "mode=0620", "gid=5"}},
+        {.destination = "/dev/shm",
+         .type = "devpts",
+         .source = "shm",
+         .options = {"nosuid", "noexec", "nodev", "mode=1777", "size=65536k"}},
+        {.destination = "/dev/mqueue",
+         .type = "mqueue",
+         .source = "mqueue",
+         .options = {"nosuid", "noexec", "nodev"}},
+        {.destination = "/sys",
+         .type = "sysfs",
+         .source = "sysfs",
+         .options = {"nosuid", "noexec", "nodev", "ro"}},
+        {.destination = "/sys/fs/cgroup",
+         .type = "cgroup",
+         .source = "cgroup",
+         .options = {"nosuid", "noexec", "nodev", "relatime", "ro"}},
+    };
     std::vector<Hooks>                 hooks;
     std::map<std::string, std::string> annotations;
-    Linux                              _linux;
+    Linux                              _linux = {
+                                     .resources = {.devices = {{.allow = false, .access = "rwm"}}},
+                                     .namespaces =
+            {
+                {.type = "pid"},
+                {.type = "network"},
+                {.type = "ipc"},
+                {.type = "uts"},
+                {.type = "mount"},
+            },
+                                     .maskedPaths =
+            {
+                "/proc/acpi",
+                "/proc/asound",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/proc/sched_debug",
+                "/proc/firmware",
+                "/proc/scci",
+            },
+                                     .readonlyPaths = {
+            "/proc/bus",
+            "/proc/fs",
+            "/proc/irq",
+            "/proc/sys",
+            "/proc/sysrq-trigger",
+        }};
 
     inline friend bool operator==(const Spec &a, const Spec &b) {
         return std::tie(a.version, a.process, a.root, a.hostname, a.mounts,
