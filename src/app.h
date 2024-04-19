@@ -5,14 +5,16 @@
 #include <variant>
 
 #include "run.h"
+#include "spec_app.h"
 
 class App {
   private:
     bool                           debug;
     CLI::App                       app;
-    std::variant<RunApp::run_args> subcmd_args;
+    std::variant<RunApp::run_args, SpecApp::spec_args> subcmd_args;
 
-    [[nodiscard]] CLI::App_p create_run_cmd();
+    CLI::App_p                          create_run_cmd();
+    CLI::App_p                          create_spec_cmd();
     [[nodiscard]] std::function<void ()> pre_callback() const;
 
   public:

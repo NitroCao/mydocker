@@ -1,10 +1,13 @@
-#include "app.h"
 #include <spdlog/spdlog.h>
+
+#include "app.h"
+#include "spec_app.h"
 
 App::App() : debug(false) {
     app.add_flag("-d,--debug", debug, "Enable debug mode");
 
     app.add_subcommand(create_run_cmd());
+    app.add_subcommand(create_spec_cmd());
     app.require_subcommand(1);
     app.positionals_at_end(true);
     app.parse_complete_callback(pre_callback());
@@ -28,12 +31,30 @@ int App::run(int argc, char **argv) {
 }
 
 CLI::App_p App::create_run_cmd() {
-    subcmd_args = RunApp::run_args{};
+    subcmd_args = RunApp::run_args{
+        .bundle_dir = RunApp::DEFAULT_BUNDLE_DIR,
+    };
     auto run = std::make_shared<CLI::App>("Create and run a container", "run");
-    run->add_option("COMMAND", std::get<RunApp::run_args>(subcmd_args).command,
-                    "Command to run");
+    run->add_option("-b,--bundle", std::get<RunApp::run_args>(subcmd_args).bundle_dir, "path to the root of the bundle directory, defaults to the current directory");
     run->callback(
         RunApp::run_callback(std::get<RunApp::run_args>(subcmd_args)));
 
     return run;
+}
+CLI::App_p App::create_spec_cmd() {
+    subcmd_args = SpecApp::spec_args{
+        .bundle = ".",
+    };
+    auto spec_cmd =
+        std::make_shared<CLI::App>("create a new specification file", "spec");
+    spec_cmd->add_option("-b,--bundle",
+                         std::get<SpecApp::spec_args>(subcmd_args).bundle,
+                         "path to the root of the bundle directory");
+    spec_cmd->add_option("--rootless",
+                         std::get<SpecApp::spec_args>(subcmd_args).rootless,
+                         "generate a configuration for a rootless container");
+    spec_cmd->callback(
+        SpecApp::spec_callback(std::get<SpecApp::spec_args>(subcmd_args)));
+
+    return spec_cmd;
 }
