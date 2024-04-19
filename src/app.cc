@@ -31,10 +31,11 @@ int App::run(int argc, char **argv) {
 }
 
 CLI::App_p App::create_run_cmd() {
-    subcmd_args = RunApp::run_args{};
+    subcmd_args = RunApp::run_args{
+        .bundle_dir = RunApp::DEFAULT_BUNDLE_DIR,
+    };
     auto run = std::make_shared<CLI::App>("Create and run a container", "run");
-    run->add_option("COMMAND", std::get<RunApp::run_args>(subcmd_args).command,
-                    "Command to run");
+    run->add_option("-b,--bundle", std::get<RunApp::run_args>(subcmd_args).bundle_dir, "path to the root of the bundle directory, defaults to the current directory");
     run->callback(
         RunApp::run_callback(std::get<RunApp::run_args>(subcmd_args)));
 
