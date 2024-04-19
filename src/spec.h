@@ -15,8 +15,8 @@ using json = nlohmann::json;
 
 static const char *spec_config = "config.json";
 const int          version_major = 1;
-const int          version_minor = 0;
-const int          version_patch = 2;
+const int          version_minor = 1;
+const int          version_patch = 0;
 
 static inline std::string version() {
     std::stringstream ver;
@@ -554,7 +554,7 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(Linux, uidMappings, gidMappings,
                                                 intelRdt, personality);
 
 typedef struct Spec {
-    std::string        version;
+    std::string        version = spec::version();
     Process            process;
     Root               root;
     std::string        hostname = "runc";
